@@ -21,3 +21,4 @@ Route::get('/product', [ProductController::class, 'show']);
 
 //Admin
 Route::get('/admin/products', [AdminProductController::class, 'index']);
+Route::get('/admin/edit', [AdminProductController::class, 'edit']);
