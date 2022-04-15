@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 
 class AdminProductController extends Controller
 {
@@ -32,8 +34,27 @@ class AdminProductController extends Controller
     }
 
     // REcebe a requisição de criar POST
-    public function store()
+    public function store(Request $request)
     {
-        return view('admin.product_edit');
+        $input = $request->validate([
+            'name' => 'string|required',
+            'price' => 'string|required',
+            'stock' => 'integer|nullable',
+            'cover' => 'file|nullable',
+            'description' => 'string|nullable',
+        ]);
+
+        $input['slug'] = Str::slug($input['name']);
+
+        if(!empty($input['cover']) and $input['cover']->isValid()){
+            $file = $input['cover'];
+            $path = $file->store('public/products');
+            $input['cover'] = $path;
+        }
+
+        Product::create($input);
+
+        return Redirect::route('admin.products');
+
     }
 }
