@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductStoreRequest;
 use App\Models\Product;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -24,17 +25,9 @@ class AdminProductController extends Controller
     }
 
     // Recebe requisição para dar update PUT
-    public function update(Product $product, Request $request)
+    public function update(Product $product, ProductStoreRequest $request)
     {
-        $input = $request->validate([
-            'name' => 'string|required',
-            'price' => 'numeric|required',
-            'stock' => 'integer|required',
-            'cover' => 'file|nullable',
-            'description' => 'string|nullable',
-        ]);
-
-
+        $input = $request->validated();
         $input['slug'] = Str::slug($input['name']);
 
         if(!empty($input['cover']) and $input['cover']->isValid()){
@@ -58,21 +51,15 @@ class AdminProductController extends Controller
     }
 
     // REcebe a requisição de criar POST
-    public function store(Request $request)
+    public function store(ProductStoreRequest $request)
     {
-        $input = $request->validate([
-            'name' => 'string|required',
-            'price' => 'numeric|required',
-            'stock' => 'integer|nullable',
-            'cover' => 'file|nullable',
-            'description' => 'string|nullable',
-        ]);
+        $input = $request->validated();
 
         $input['slug'] = Str::slug($input['name']);
 
-        if(!empty($input['cover']) and $input['cover']->isValid()){
+        if (!empty($input['cover']) && $input['cover']->isValid()) {
             $file = $input['cover'];
-            $path = $file->store('public/products');
+            $path = $file->store('products');
             $input['cover'] = $path;
         }
 
@@ -80,5 +67,12 @@ class AdminProductController extends Controller
 
         return Redirect::route('admin.products');
 
+    }
+
+    public function destroy(Product $product)
+    {
+        $product->delete();
+
+        return Redirect::route('admin.products');
     }
 }

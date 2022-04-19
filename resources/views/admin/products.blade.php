@@ -31,13 +31,22 @@
                         <td class="px-4 py-3">{{ $product->id }}</td>
                         <td class="px-4 py-3">
                             <img alt="ecommerce" class="object-cover object-center w-full h-full block" src="{{ \Illuminate\Support\Facades\Storage::url($product->cover) }}">
+                            {{-- <img alt="ecommerce" class="object-cover object-center w-full h-full block" src="/public/storage/products/0EXVn6ZpsDGp7qH5Yc82BbGLduzbnpRt4KxKqMMD.png"> --}}
                         </td>
                         <td class="px-4 py-3">{{ $product->name }}</td>
                         <td class="px-4 py-3">R${{ $product->price }}</td>
                         <td class="px-4 py-3">{{ $product->stock }}</td>
                         <td class="px-4 py-3 text-sm text-right space-x-3 text-gray-900">
                             <a href="{{ route('admin.products.edit', $product->id) }}" class="mt-3 text-indigo-500 inline-flex items-center">Editar</a>
-                            <a class="mt-3 text-indigo-500 inline-flex items-center">Deletar</a>
+                            <form
+                                method="post"
+                                action="{{ route('admin.products.destroy', $product->id) }}"
+                            >
+                                @csrf
+                                @method('delete')
+
+                                <button type="submit" class="mt-3 text-indigo-500 inline-flex items-center">Deletar</button>
+                            </form>
                         </td>
                     </tr>
                     @endforeach
